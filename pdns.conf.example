@@ -1,3 +1,5 @@
+##### Copy this file to pdns.conf within this same directory and fill in with your required details
+
 PDNS_API_URL="http(s):://ns1.example.com:8080"
 PDNS_API_KEY="SUPERSECRETKEY"
 RDNS_DOMAIN="static.host.com"
