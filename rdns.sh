@@ -1,13 +1,15 @@
 #!/bin/bash
 set -e
 
+########### Import config vars ###########
 source pdns.conf
 
-rm -f ip-arpa.txt ip-rdns.txt iplist.txt
+### Cleanup any previous leftover files ###
+rm -f ip-list.txt ip-var.txt curlPayloadPTRrecord.json
 
-# Define some functions
+########## Define some functions ##########
 gen_ip_list() {
-  nmap -n -sL $RDNS_IP_SUBNET | awk '/Nmap scan report/{print $NF}' > iplist.txt
+  nmap -n -sL $RDNS_IP_SUBNET | awk '/Nmap scan report/{print $NF}' > ip-list.txt
 }
 
 pdns_payload_generate() {
@@ -15,33 +17,14 @@ pdns_payload_generate() {
 }
 
 pdns_curl() {
-  curl -v \
-       -H "X-API-Key: $PDNS_API_KEY" \
+  curl -H "X-API-Key: $PDNS_API_KEY" \
        -H "Content-Type: application/json" \
        -d @curlPayloadPTRrecord.json \
        -X PATCH $PDNS_API_URL/api/v1/servers/localhost/zones/$PDNS_ZONE_ID
 }
 
-gen_ip_arpa() {
-  iplist="iplist.txt"
-  ips=$(cat $iplist)
-  for ip in $ips
-  do
-    echo "$ip" | awk -F . '{print "ip_arpa="""$4"."$3"."$2"."$1".in-addr.arpa."""}' >> ip-arpa.txt
-  done
-}
-
-gen_ip_rdns() {
-  iplist="iplist.txt"
-  ips=$(cat $iplist)
-  for ip in $ips
-  do
-    echo "$ip" | awk -F . '{print "rdns_entry="""$4"-"$3"-"$2"-"$1".""'"$RDNS_DOMAIN"'"""}' >> ip-rdns.txt
-  done
-}
-
 push_payload() {
-  iplist="iplist.txt"
+  iplist="ip-list.txt"
   ips=$(cat $iplist)
   for ip in $ips
   do
@@ -50,9 +33,10 @@ push_payload() {
     source ip-var.txt
     $(pdns_payload_generate)
     $(pdns_curl)
-
   done
 }
-
+############## End functions ##############
+############# Generate IP List ############
 $(gen_ip_list)
+############## Push Payload ###############
 $(push_payload)
