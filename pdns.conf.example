@@ -1,0 +1,4 @@
+PDNS_API_URL="http(s):://ns1.example.com:8080"
+PDNS_API_KEY="SUPERSECRETKEY"
+RDNS_DOMAIN="static.host.com"
+RDNS_IP_SUBNET="192.168.0.0/24"
