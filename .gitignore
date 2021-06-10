@@ -1,4 +1,3 @@
 pdns.conf
-ip-arpa.txt
-ip-rdns.txt
-iplist.txt
+*.txt
+curlPayloadPTRrecord.json
