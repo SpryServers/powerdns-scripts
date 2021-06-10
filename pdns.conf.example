@@ -2,5 +2,6 @@
 
 PDNS_API_URL="http(s):://ns1.example.com:8080"
 PDNS_API_KEY="SUPERSECRETKEY"
+PDNS_ZONE_ID="30.168.192.in-addr.arpa."
 RDNS_DOMAIN="static.host.com"
-RDNS_IP_SUBNET="192.168.0.0/24"
+RDNS_IP_SUBNET="192.168.30.0/24"
