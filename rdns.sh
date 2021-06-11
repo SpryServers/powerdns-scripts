@@ -1,4 +1,15 @@
 #!/bin/bash
+###############################################################
+#
+# Copyright (c) 2021, Spry Servers, LLC
+#
+# Licensed under BSD 2-Clause License (Simplified BSD License)
+#
+# PowerDNS Helper Scripts
+#
+# Mass Update rDNS
+#
+################################################################
 set -e
 
 ########### Import config vars ###########
