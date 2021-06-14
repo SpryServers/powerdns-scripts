@@ -17,7 +17,7 @@ Helper scripts for PowerDNS 4, which interact via the API.
 
 ### Apply rDNS Template Instructions
 - Complete generic instructions
-- Create a reverse zone in PowerDNS for the /24 you will be applying a template to (ie: 30.168.192.in-addr.arpa.)
+- Create a reverse zone in PowerDNS for the subnet (/24 or smallerat a time)  you will be applying a template to (ie: 30.168.192.in-addr.arpa.)
 - Fill in pdns.conf with the PowerDNS Zone ID you just created. (Include the . at the end)
 - Enter the domain you wish to point your generic rDNS records to. (ie. static.host.com)
   - Using the above example your resulting records will look like "128-30-168-192.static.host.com"
