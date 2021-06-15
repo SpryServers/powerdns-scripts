@@ -13,13 +13,8 @@
 
 set -e
 
-########### Import config vars ###########
-source pdns.conf
-
-###### Create Temporary Directory ########
-
-mkdir tmp
-########## Define some functions ##########
+# Cleanup any possible tmp files from previous failed or cancelled batches
+rm -rf tmp
 
 PTR_TEMPLATE=""
 
@@ -50,19 +45,31 @@ then
   exit 1
 fi
 
+########### Import config vars ###########
+source pdns.conf
+
+###### Create Temporary Directory ########
+
+mkdir tmp
+########## Define some functions ##########
+
 gen_ip_list() {
   nmap -n -sL $RDNS_IP_SUBNET | awk '/Nmap scan report/{print $NF}' > tmp/ip-list.txt
 }
 
 pdns_payload_generate() {
+  source tmp/ip-var.txt
   cat payload-templates/$PTR_TEMPLATE | sed -e 's|ip_arpa|'"$ip_arpa"'|g' -e 's|rdns_entry|'"$rdns_entry"'|g' > tmp/curlPayloadPTRrecord.json
 }
 
 pdns_curl() {
-  curl -H "X-API-Key: $PDNS_API_KEY" \
-       -H "Content-Type: application/json" \
-       -d @tmp/curlPayloadPTRrecord.json \
-       -X PATCH $PDNS_API_URL/api/v1/servers/localhost/zones/$PDNS_ZONE_ID
+    curl -s -S \
+         -o /dev/null \
+         -w '%{http_code}' \
+         -H "X-API-Key: $PDNS_API_KEY" \
+         -H "Content-Type: application/json" \
+         -d @tmp/curlPayloadPTRrecord.json \
+         -X PATCH $PDNS_API_URL/api/v1/servers/localhost/zones/$PDNS_ZONE_ID > /tmp/http-respcode.txt
 }
 
 push_payload() {
@@ -72,16 +79,24 @@ push_payload() {
   do
     echo "$ip" | awk -F . '{print "ip_arpa="""$4"."$3"."$2"."$1".in-addr.arpa."""}' > tmp/ip-var.txt
     echo "$ip" | awk -F . '{print "rdns_entry="""$4"-"$3"-"$2"-"$1".""'"$RDNS_DOMAIN"'"""}' >> tmp/ip-var.txt
-    source tmp/ip-var.txt
-    $(pdns_payload_generate)
-    $(pdns_curl)
+    pdns_payload_generate
+    pdns_curl
+    echo ""
+    http_code=$(cat /tmp/http-respcode.txt)
+    if [[ $http_code -eq 204 ]]; then
+      echo "Set rDNS record for IP $ip successfully"
+    else
+      echo "Error: Response code: $http_code"
+      exit 1
+    fi
   done
 }
+
 ############## End functions ##############
 ############# Generate IP List ############
-$(gen_ip_list)
+gen_ip_list
 ############## Push Payload ###############
-$(push_payload)
+push_payload
 
 ###### Remove Temporary Directory #########
 rm -rf tmp
