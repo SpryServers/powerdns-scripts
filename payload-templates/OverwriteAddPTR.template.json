@@ -3,7 +3,7 @@
   {
    "name": "ip_arpa",
    "type": "PTR",
-   "ttl": 86400,
+   "ttl": 1800,
    "changetype": "REPLACE",
    "records": [ {"content": "rdns_entry.", "disabled": false} ]
   }
