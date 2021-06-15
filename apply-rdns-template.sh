@@ -20,16 +20,16 @@ PTR_TEMPLATE=""
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-      -u | --nonexisting )    PTR_TEMPLATE=AddNonExistPTR.template.json
-      ;;
+#      -u | --nonexisting )    PTR_TEMPLATE=AddNonExistPTR.template.json
+#      ;;
       -o | --overwrite )      PTR_TEMPLATE=OverwriteAddPTR.template.json
       ;;
       -h | --help | \? )
       echo "Usage:"
       echo ""
-      echo "--nonexisting | -u Update only non-existing rDNS records"
-      echo "--overwrite   | -o Overwrite entire PTR zone with template records"
-      echo "--help        | -h Print this help message"
+#      echo "--nonexisting | -u | Update only non-existing rDNS records"
+      echo "--overwrite   | -o | Overwrite entire PTR zone with template records"
+      echo "--help        | -h | Print this help message"
       exit 0
       ;;
       *) echo "Unknown parameter passed: $1. Pass -h for help."
