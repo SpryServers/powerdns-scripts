@@ -1,0 +1,11 @@
+{
+"rrsets": [
+  {
+   "name": "ip_arpa",
+   "type": "PTR",
+   "ttl": 86400,
+   "changetype": "REPLACE",
+   "records": [ {"content": "rdns_entry.", "disabled": false} ]
+  }
+ ]
+}

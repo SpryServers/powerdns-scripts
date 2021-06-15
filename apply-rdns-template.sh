@@ -11,6 +11,7 @@
 #
 ################################################################
 
+set -e
 
 ########### Import config vars ###########
 source pdns.conf
@@ -19,12 +20,42 @@ source pdns.conf
 
 mkdir tmp
 ########## Define some functions ##########
+
+PTR_TEMPLATE=""
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+      -u | --nonexisting )    PTR_TEMPLATE=AddNonExistPTR.template.json
+      ;;
+      -o | --overwrite )      PTR_TEMPLATE=OverwriteAddPTR.template.json
+      ;;
+      -h | --help | \? )
+      echo "Usage:"
+      echo ""
+      echo "--nonexisting | -u Update only non-existing rDNS records"
+      echo "--overwrite   | -o Overwrite entire PTR zone with template records"
+      echo "--help        | -h Print this help message"
+      exit 0
+      ;;
+      *) echo "Unknown parameter passed: $1. Pass -h for help."
+      exit 1
+      ;;
+    esac
+    shift
+  done
+
+if [ -z $PTR_TEMPLATE ];
+then
+  echo "Please specify PTR update method. Type -h for help"
+  exit 1
+fi
+
 gen_ip_list() {
   nmap -n -sL $RDNS_IP_SUBNET | awk '/Nmap scan report/{print $NF}' > tmp/ip-list.txt
 }
 
 pdns_payload_generate() {
-  cat payload-templates/addPTR.template.json | sed -e 's|ip_arpa|'"$ip_arpa"'|g' -e 's|rdns_entry|'"$rdns_entry"'|g' > tmp/curlPayloadPTRrecord.json
+  cat payload-templates/$PTR_TEMPLATE | sed -e 's|ip_arpa|'"$ip_arpa"'|g' -e 's|rdns_entry|'"$rdns_entry"'|g' > tmp/curlPayloadPTRrecord.json
 }
 
 pdns_curl() {
