@@ -48,9 +48,35 @@ fi
 ########### Import config vars ###########
 source pdns.conf
 
-###### Create Temporary Directory ########
+if [ -z $PDNS_API_URL ];
+then
+  echo "PDNS_API_URL variable not found. Please make sure pdns.conf exists and the variable is set."
+  exit 1
+fi
+if [ -z $PDNS_API_KEY ];
+then
+  echo "PDNS_API_KEY variable not found. Please make sure pdns.conf exists and the variable is set."
+  exit 1
+fi
+if [ -z $PDNS_ZONE_ID ];
+then
+  echo "PDNS_ZONE_ID variable not found. Please make sure pdns.conf exists and the variable is set."
+  exit 1
+fi
+if [ -z $RDNS_DOMAIN ];
+then
+  echo "RDNS_DOMAIN variable not found. Please make sure pdns.conf exists and the variable is set."
+  exit 1
+fi
+if [ -z $RDNS_IP_SUBNET ];
+then
+  echo "RDNS_IP_SUBNET variable not found. Please make sure pdns.conf exists and the variable is set."
+  exit 1
+fi
 
+###### Create Temporary Directory ########
 mkdir tmp
+
 ########## Define some functions ##########
 
 gen_ip_list() {
